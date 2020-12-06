@@ -1,0 +1,95 @@
+*, :before, :after {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+
+}
+
+body {
+  --cube-edge: 12.5em;
+  --box-width: 12.5em;
+  --box-height: 12.5em;
+  --box-depth: 12.5em;
+  --box-shadow: inset 0 0 0 2px black;
+
+  /* Colours from: https://css-tricks.com/simplifying-css-cubes-custom-properties/ */
+  --color-palegoldenrod: #feffaa80;
+  --color-palegreen: #b2ff980;
+  --color-pink: #fbc2eb80;
+  --color-lightsteelblue: #a6c1ee80;
+  --color-palegreen: #84fab080;
+  --color-lightskyblue1: #8fd3f480;
+  --color-lightskyblue2: #a1c4fd80;
+  --color-paleturquoise: #c2e9fb80;
+  --color-khaki: #f6d36580;
+  --color-lightsalmon: #fda08580;
+  --color-papayawhip: #ffecd280;
+  --color-lightpink: #fcb69f80;
+
+  font-family: sans-serif;
+  font-size8 16px;
+  height: 100vh;
+  perspective: 37.5em; /* 600px / 16px*/
+}
+
+.cube {
+  border-color: yellow;
+  position: absolute;
+  top: 60%;
+  left: 50%;
+}
+
+.cube-nested {
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+}
+
+.face {
+  width: var(--box-width);
+  height: var(--box-height);
+  position: absolute;
+  text-align: center;
+  line-height: var(--box-height);
+  box-shadow: var(--box-shadow);
+  margin: calc(-.5 * var(--box-height)) calc(-.5 * var(--box-width));
+}
+
+.front {
+  background: linear-gradient(var(--color-palegoldenrod), var(--color-palegreen));
+  transform: rotateY(0deg) translateZ(calc(.5 * var(--box-depth)));
+}
+
+.back {
+  background: linear-gradient(var(--color-pink), var(--color-lightsteelblue));
+  transform: rotateY(180deg) translateZ(calc(.5 * var(--box-depth)));
+}
+
+.left {
+  background: linear-gradient(var(--color-palegreen), var(--color-lightskyblue1));
+  width: var(--box-depth);
+  transform: rotateY(270deg) translateZ(calc(.5 * var(--box-width)));
+  margin: calc(-.5 * var(--box-height)) calc(-.5 * var(--box-depth));
+}
+
+.right {
+  background: linear-gradient(var(--color-lightskyblue2), var(--color-paleturquoise));
+  width: var(--box-depth);
+  transform: rotateY(90deg) translateZ(calc(.5 * var(--box-width)));
+  margin: calc(-.5 * var(--box-height)) calc(-.5 * var(--box-depth));
+}
+
+.top {
+  background: linear-gradient(var(--color-khaki), var(--color-lightsalmon));
+  height: var(--box-depth);
+  line-height: var(--box-depth);
+  transform: rotateX(90deg) translateZ(calc(.5 * var(--box-height)));
+  margin: calc(-.5 * var(--box-depth)) calc(-.5 * var(--box-width));
+}
+
+.bottom {
+  background: linear-gradient(var(--color-papayawhip), var(--color-lightpink));
+  height: var(--box-depth);
+  line-height: var(--box-depth);
+  transform: rotateX(-90deg) translateZ(calc(.5 * var(--box-height)));
+  margin: calc(-.5 * var(--box-depth)) calc(-.5 * var(--box-width));
+}

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="/style.css">
+  <title>3D Box Reference</title>
+</head>
+<body>
+  <!--Cube elements were nested so that the x,y and x rotate transforms could be applied independently to the cube-->
+  <div class='cube'>
+    <div class='cube-x cube-nested'>
+      <div class='cube-y cube-nested'>
+        <div class='cube-z cube-nested'>
+          <div class='face front'></div>
+          <div class='face back'></div>
+          <div class='face left'></div>
+          <div class='face right'></div>
+          <div class='face top'></div>
+          <div class='face bottom'></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form id='cube-form'>
+    <fieldset name="face">
+      <legend>Choose a face to show!</legend>
+      <input id="front" type="radio" name="face" value="show-front" checked>
+      <label for="front">Front</label>
+      <input id="back" type="radio" name="face" value="show-back">
+      <label for="back">Back</label>
+      <input id="left" type="radio" name="face" value="show-left">
+      <label for="left">Left</label>
+      <input id="right" type="radio" name="face" value="show-right">
+      <label for="right">Right</label>
+      <input id="top" type="radio" name="face" value="show-top">
+      <label for="top">Top</label>
+      <input id="form-bottom" type="radio" name="face" value="show-bottom">
+      <label for="form-bottom">Bottom</label>
+    </fieldset>
+    <fieldset name="rotation">
+      <legend>Choose a rotation angle!</legend>
+      <label for="form-x-axis">X-axis:</label>
+      <input id="form-x-axis" type="range" value="0" min="0" max="360">
+      <output for="form-x-axis">0</output>
+      <label for="form-y-axis">Y-axis:</label>
+      <input id="form-y-axis" type="range" value="0" min="0" max="360">
+      <output id="form-y-axis">0</output>
+      <label for="form-z-axis">Z-axis:</label>
+      <input id="form-z-axis" type="range" value="0" min="0" max="360">
+      <output id="form-z-axis">0</output>
+    </fieldset>
+    <fieldset name="dimensions">
+      <legend>Choose the width, height and depth!</legend>
+      <label for="width">Width:</label>
+      <input id="width" type="range" value="12.5" min="12.5" max="25" step="0.1">
+      <label for="height">Height:</label>
+      <input id="height" type="range" value="12.5" min="12.5" max="25" step="0.1">
+      <label for="depth">Depth:</label>
+      <input id="depth" type="range" value="12.5" min="12.5" max="25" step="0.1">
+    </fieldset>
+    <fieldset name="visibility">
+      <label for="see-through">See through</label>
+      <input type="checkbox" id="see-through" checked>
+      <label for="outline">Outline</label>
+      <input type="checkbox" id="outline" checked>
+    </fieldset>
+    <label for="random-rotation">Random Rotation</label>
+    <input id="random-rotation" type="button" value="Rotate me randomly!">
+  </form>
+
+  <script>
+    /* Get body element with box dimension variables */
+    const body = document.querySelector("body");
+
+    /* Get nested cube elements to apply transforms to */
+    const cube_x = document.querySelector(".cube-x");
+    const cube_y = document.querySelector(".cube-y");
+    const cube_z = document.querySelector(".cube-z");
+
+    /* Get all the controls for the box */
+    const face_fieldset = document.querySelector("fieldset[name='face']");
+    const rotation_fieldset = document.querySelector("fieldset[name='rotation']");
+    var rotation_sliders = rotation_fieldset.querySelectorAll("input");
+    var rotation_outputs = rotation_fieldset.querySelectorAll("output");
+
+    const dimensions_fieldset = document.querySelector("fieldset[name='dimensions']");
+    var dimensions_sliders = dimensions_fieldset.querySelectorAll("input");
+    var dimensions_outputs = dimensions_fieldset.querySelectorAll("output");
+
+    const visibility_checkbox = document.querySelector("#see-through");
+    const outline_checkbox = document.querySelector("#outline")
+    const random_button = document.querySelector("#random-rotation");
+
+    const cube_faces = document.querySelectorAll(".face");
+
+    function rotateBox(x, y, z) {
+      if (x != null) {
+        cube_x.style.setProperty("transform", `rotateX(${x}deg)`);
+      }
+
+      if (y != null) {
+        cube_y.style.setProperty("transform", `rotateY(${y}deg)`);
+      }
+
+      if (z != null) {
+        cube_z.style.setProperty("transform", `rotateZ(${z}deg)`);
+      }
+    }
+
+    function updateRotationSliders(x, y, z) {
+      for (let i = 0; i < rotation_sliders.length; i++) {
+        switch(i) {
+          case 0:
+            rotation_sliders[i].value = x;
+            break;
+          case 1:
+            rotation_sliders[i].value = y;
+            break;
+          case 2:
+            rotation_sliders[i].value = z;
+            break;
+        }
+      }
+    }
+
+    function updateRotationOutputs(x, y, z) {
+      if (x != null) {
+        rotation_outputs[0].value = x;
+      }
+
+      if (y != null) {
+        rotation_outputs[1].value = y;
+      }
+
+      if (z != null) {
+        rotation_outputs[2].value = z;
+      }
+    }
+
+    var currentFace = '';
+    var currentFaceRadio = '';
+
+    function changeSide() {
+      currentFaceRadio = face_fieldset.querySelector(":checked");
+      currentFace = currentFaceRadio.value;
+
+      /* Transform box according to x, y, z rotation angles*/
+      let x;
+      let y;
+      let z;
+
+      switch(currentFace) {
+        case "show-front":
+          x = 0;
+          y = 0;
+          z = 0;
+          break;
+        case "show-back":
+          x = 0;
+          y = 180;
+          z = 0;
+          break;
+        case "show-left":
+          x = 0;
+          y = 90;
+          z = 0;
+          break;
+        case "show-right":
+          x = 0;
+          y = 270;
+          z = 0;
+          break;
+        case "show-top":
+          x = 270;
+          y = 0;
+          z = 0;
+          break;
+        case "show-bottom":
+          x = 90;
+          y = 0;
+          z = 0;
+      }
+      /* Rotate box */
+      rotateBox(x, y, z);
+
+      /* Update rotation angle sliders and outputs */
+      updateRotationSliders(x, y, z);
+      updateRotationOutputs(x, y, z);
+    }
+
+    function changeDimensions(width, height, depth) {
+      if (width != null) {
+        body.style.setProperty("--box-width", width + "em");
+      }
+
+      if (height != null) {
+        body.style.setProperty("--box-height", height + "em");
+      }
+
+      if (depth != null) {
+        body.style.setProperty("--box-depth", depth + "em");
+      }
+    }
+
+    changeSide();
+
+    face_fieldset.addEventListener("change", changeSide);
+
+    for (let i = 0; i < rotation_sliders.length; i++) {
+      let slider = rotation_sliders[i];
+      let output = rotation_outputs[i];
+
+      slider.addEventListener("input", () => {
+        switch (i) {
+          case 0:
+            /* Pass in only the first x value argument */
+            rotateBox(slider.value);
+            updateRotationOutputs(slider.value);
+            break;
+          case 1:
+            /* Pass in only the second y value argument */
+            rotateBox(null, slider.value, null);
+            updateRotationOutputs(null, slider.value, null);
+            break;
+          case 2:
+            /* Pass in only the third z value argument */
+            rotateBox(null, null, slider.value);
+            updateRotationOutputs(null, null, slider.value);
+        }
+      });
+    }
+
+    for (let i = 0; i < dimensions_sliders.length; i++) {
+      let dimensions_slider = dimensions_sliders[i];
+      dimensions_slider.addEventListener("input",() => {
+       switch (i) {
+        case 0:
+              changeDimensions(dimensions_slider.value);
+          break;
+        case 1:
+          changeDimensions(null, dimensions_slider.value, null);
+          break;
+        case 2:
+          changeDimensions(null, null, dimensions_slider.value);
+        }
+      });
+    }
+
+    /* Toggle the backface-visibility property of each cube face on checking the see through checkbox */
+
+    visibility_checkbox.addEventListener("change", function() {
+      for (let i = 0; i < cube_faces.length; i++) {
+        let face = cube_faces[i];
+        if (!this.checked) {
+          face.style.setProperty("backface-visibility", "hidden");
+        } else {
+          face.style.setProperty("backface-visibility", "visible");
+        }
+      }
+    });
+
+    outline_checkbox.addEventListener("change", function() {
+      for (let i = 0; i < cube_faces.length; i++) {
+        let face = cube_faces[i];
+        if (!this.checked) {
+          face.style.setProperty("box-shadow", "none");
+        } else {
+          face.style.setProperty("box-shadow", window.getComputedStyle(body).getPropertyValue("--box-shadow"));
+        }
+      }
+    })
+
+    random_button.addEventListener("click", function() {
+      let random_x = Math.floor(Math.random() * 361);
+      let random_y = Math.floor(Math.random() * 361);
+      let random_z = Math.floor(Math.random() * 361);
+      rotateBox(random_x, random_y, random_z);
+      updateRotationSliders(random_x, random_y, random_z);
+      updateRotationOutputs(random_x, random_y, random_z);
+    });
+  </script>
+  </body>
+</html>
